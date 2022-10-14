@@ -3,19 +3,20 @@ package org.nekosoft.shlink.entity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.Hibernate
+import org.nekosoft.shlink.entity.support.AuditInfo
+import org.nekosoft.shlink.entity.support.JpaDataAccessAudit
 import org.nekosoft.shlink.entity.support.ShortUrlsToTags
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import org.springframework.web.util.UriComponentsBuilder
-import java.time.Instant
 import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@EntityListeners(AuditingEntityListener::class, JpaDataAccessAudit::class)
 class ShortUrl (
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
-
-    var createdDate: Instant? = Instant.now(),
 
     var shortCode: String,
 
@@ -54,6 +55,9 @@ class ShortUrl (
     var forwardPathTrail: Boolean = true,
 
     var password: String? = null,
+
+    @Embedded
+    var auditInfo: AuditInfo = AuditInfo(),
 
     ) {
 

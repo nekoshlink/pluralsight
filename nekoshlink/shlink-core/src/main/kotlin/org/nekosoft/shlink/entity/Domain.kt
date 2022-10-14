@@ -1,9 +1,13 @@
 package org.nekosoft.shlink.entity
 
 import org.hibernate.Hibernate
+import org.nekosoft.shlink.entity.support.AuditInfo
+import org.nekosoft.shlink.entity.support.JpaDataAccessAudit
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import javax.persistence.*
 
 @Entity
+@EntityListeners(AuditingEntityListener::class, JpaDataAccessAudit::class)
 class Domain(
 
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +27,10 @@ class Domain(
         // for compatibility with Shlink.io
         var invalidShortUrlRedirect: String? = null,
 
-        var isDefault: Boolean = authority == DEFAULT_DOMAIN
+        var isDefault: Boolean = authority == DEFAULT_DOMAIN,
+
+        @Embedded
+        var auditInfo: AuditInfo = AuditInfo(),
 
 ) {
 

@@ -8,16 +8,32 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.data.domain.AuditorAware
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.config.web.servlet.invoke
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
-
+import java.util.*
 
 @Configuration
+@EnableJpaAuditing
 class AuditConfiguration {
+
+    @Bean
+    fun auditorProvider(): AuditorAware<String> {
+        return AuditorAware<String> {
+            Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .filter(Authentication::isAuthenticated)
+                .map { it?.principal?.toString() }
+        }
+    }
 
     @Bean
     fun authenticateEventPublisher(pub: ApplicationEventPublisher?): AuthenticationEventPublisher {
