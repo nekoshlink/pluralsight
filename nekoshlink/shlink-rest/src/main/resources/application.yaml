@@ -8,13 +8,22 @@ spring:
   main:
     banner-mode: "console"
 
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-alias: "localhost"
+    key-password: "${PASSWORD}"
+    key-store: "certs/keystore.jks"
+    key-store-password: "${PASSWORD}"
+
 logging:
   level:
     root: info
     org.springframework.security: debug
 
 nekoshlink:
-  initial-default-domain: "http://localhost:8080"
+  initial-default-domain: "https://localhost:8443"
   security:
     api-key: "federicomestrone"
   shortener:
