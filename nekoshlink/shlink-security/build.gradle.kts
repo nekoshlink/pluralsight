@@ -13,6 +13,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.apache.tomcat.embed:tomcat-embed-core")
     implementation("org.springframework.data:spring-data-jpa")
+    implementation("org.aspectj:aspectjweaver")
     implementation("org.hibernate:hibernate-core")
     implementation("com.fasterxml.jackson.core:jackson-annotations")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")

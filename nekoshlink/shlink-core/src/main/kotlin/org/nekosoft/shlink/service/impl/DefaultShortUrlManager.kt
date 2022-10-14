@@ -11,6 +11,8 @@ import org.nekosoft.shlink.entity.*
 import org.nekosoft.shlink.entity.support.ShortUrlWithStats
 import org.nekosoft.shlink.entity.support.ShortUrlsToTags
 import org.nekosoft.shlink.entity.support.VisitType
+import org.nekosoft.shlink.sec.delegation.annotation.RunAs
+import org.nekosoft.shlink.sec.delegation.RunAs as RunAsBlock
 import org.nekosoft.shlink.service.*
 import org.nekosoft.shlink.service.exception.*
 import org.nekosoft.shlink.vo.*
@@ -46,7 +48,9 @@ class DefaultShortUrlManager(
             val shortUrl = if (options.id != null) {
                 dao.findById(options.id!!)
             } else {
-                val authority = domains.resolveDefaultAuthority(options.domain)
+                val authority = RunAsBlock.userWithRoles("Domains", "Viewer").use {
+                    domains.resolveDefaultAuthority(options.domain)
+                }
                 dao.find(options.shortCode!!, authority)
             }
             if (shortUrl == null) {
@@ -63,7 +67,9 @@ class DefaultShortUrlManager(
 
         if (meta.longUrl == null) throw MissingLongUrlException()
 
-        val domain = domains.findByAuthority(meta.domain) ?: throw DomainDoesNotExistException(domains.resolveDefaultAuthority(meta.domain))
+        val domain = RunAsBlock.userWithRoles("Domains", "Viewer").use {
+            domains.findByAuthority(meta.domain) ?: throw DomainDoesNotExistException(domains.resolveDefaultAuthority(meta.domain))
+        }
 
         val customSlugWasProvided = (meta.shortCode != null)
         if (!customSlugWasProvided) {
@@ -138,15 +144,21 @@ class DefaultShortUrlManager(
         if ((options.id != null) xor (options.shortCode != null)) {
             if (options.id != null) {
                 try {
-                    visits.removeShortUrlReference(options.id!!)
+                    RunAsBlock.userWithRoles("Visits", "Editor").use {
+                        visits.removeShortUrlReference(options.id!!)
+                    }
                     dao.deleteById(options.id!!)
                 } catch (_: EmptyResultDataAccessException) {
                     throw ShortUrlDoesNotExistException(options.id, options.shortCode, options.domain)
                 }
             } else {
-                val authority = domains.resolveDefaultAuthority(options.domain)
+                val authority = RunAsBlock.userWithRoles("Domains", "Viewer").use {
+                    domains.resolveDefaultAuthority(options.domain)
+                }
                 val shortUrl = dao.find(options.shortCode!!, authority) ?: throw ShortUrlDoesNotExistException(options.id, options.shortCode, authority)
-                visits.removeShortUrlReference(shortUrl.id!!)
+                RunAsBlock.userWithRoles("Visits", "Editor").use {
+                    visits.removeShortUrlReference(shortUrl.id!!)
+                }
                 dao.delete(shortUrl)
             }
         } else {
@@ -162,17 +174,21 @@ class DefaultShortUrlManager(
         return dao.listWithStats(options, pageable)
     }
 
+    @RunAs("ShortUrls", "Viewer", allowAnonymous = true)
     override fun listCrawlableURLs(): List<String> {
         return dao.listCrawlableURLs()
     }
 
+    @RunAs("Visits", "Editor", allowAnonymous = true)
     override fun resolve(meta: ResolveMeta, enricher: VisitDataEnricher): Pair<ShortUrl?, UriComponents?> {
         if (meta.shortCode == null) {
             tracker.track(VisitType.INVALID_REQUEST, meta, null, null, enricher)
             throw MissingShortUrlException()
         }
 
-        val shortUrl = dao.findWithDomainFallback(meta.shortCode!!, meta.domain)
+        val shortUrl = RunAsBlock.anonymousWithRoles("ShortUrls", "Viewer").use {
+            dao.findWithDomainFallback(meta.shortCode!!, meta.domain)
+        }
         if (shortUrl != null) {
 
             if (shortUrl.password != meta.password) {
@@ -189,8 +205,10 @@ class DefaultShortUrlManager(
                 throw ShortUrlNotEnabledYetException(meta.shortCode!!, meta.domain)
             }
             if (shortUrl.maxVisits != null && shortUrl.maxVisits!! > 0) {
-                val visitCount = visits.visitStatsPerShortUrl(shortUrl).visitCount
-                if (visitCount > shortUrl.maxVisits!!) {
+                val visitCount = RunAsBlock.userWithRoles("Visits", "Viewer").use {
+                    visits.visitStatsPerShortUrl(shortUrl).visitCount
+                }
+                if (visitCount >= shortUrl.maxVisits!!) {
                     tracker.track(VisitType.OVER_LIMIT, meta, shortUrl, null, enricher)
                     throw MaxVisitLimitReachedException(meta.shortCode!!, meta.domain)
                 }
@@ -262,10 +280,12 @@ class DefaultShortUrlManager(
         // DO NOT DELEGATE AS TAGS EDITOR
         // If the user is not an editor, they can only assign existing tags
         // but they should not be able to create new ones
-        tagNames.forEach {
-            if (shortUrl.tags.find { t -> t.tag.name == it } == null) {
-                val tag = tags.findByName(it) ?: tags.create(it, null)
-                shortUrl.tags.add(ShortUrlsToTags(null, shortUrl, tag))
+        RunAsBlock.userWithRoles("Tags", "Viewer").use {
+            tagNames.forEach {
+                if (shortUrl.tags.find { t -> t.tag.name == it } == null) {
+                    val tag = tags.findByName(it) ?: tags.create(it, null)
+                    shortUrl.tags.add(ShortUrlsToTags(null, shortUrl, tag))
+                }
             }
         }
    }
