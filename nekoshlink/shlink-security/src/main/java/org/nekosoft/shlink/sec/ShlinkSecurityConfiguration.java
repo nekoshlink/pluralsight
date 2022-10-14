@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.HashSet;
@@ -18,28 +20,19 @@ import java.util.HashSet;
 @Configuration
 public class ShlinkSecurityConfiguration {
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        HashSet<GrantedAuthority> adminAuthority = new HashSet<>();
-        adminAuthority.add(new SimpleGrantedAuthority("ROLE_Admin"));
-        adminAuthority.add(new SimpleGrantedAuthority("ROLE_User"));
-        adminAuthority.add(new SimpleGrantedAuthority("ROLE_Anyone"));
-        HashSet<GrantedAuthority> userAuthority = new HashSet<>();
-        userAuthority.add(new SimpleGrantedAuthority("ROLE_User"));
-        userAuthority.add(new SimpleGrantedAuthority("ROLE_Anyone"));
-        HashSet<GrantedAuthority> guestAuthority = new HashSet<>();
-        guestAuthority.add(new SimpleGrantedAuthority("ROLE_Anyone"));
-        return new InMemoryUserDetailsManager(
-            new User("admin", "{noop}password1", adminAuthority),
-            new User("user", "{noop}password2", userAuthority),
-            new User("guest", "{noop}password3", guestAuthority)
-        );
-    }
+    public static final String VERSION_STRING = "1";
 
     @Bean
-    public DaoAuthenticationProvider userProvider(UserDetailsService detailsService) {
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public DaoAuthenticationProvider userProvider(UserDetailsService userService, PasswordEncoder pwdEncoder) {
         DaoAuthenticationProvider userProvider = new DaoAuthenticationProvider();
-        userProvider.setUserDetailsService(detailsService);
+        userProvider.setUserDetailsService(userService);
+        userProvider.setPasswordEncoder(pwdEncoder);
         return userProvider;
     }
 
