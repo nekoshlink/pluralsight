@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
 
-    api("org.springframework.security:spring-security-core")
+    api("org.springframework.boot:spring-boot-starter-security")
     implementation("org.apache.tomcat.embed:tomcat-embed-core")
 
     implementation("info.picocli:picocli:4.6.3")
