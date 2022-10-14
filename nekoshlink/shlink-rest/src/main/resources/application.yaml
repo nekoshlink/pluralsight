@@ -27,9 +27,9 @@ server:
 
 logging:
   level:
-    root: info
-    org.springframework.security: debug
-    org.springframework.aop: debug
+    root: warn
+    org.springframework.security: warn
+    org.springframework.aop: warn
 
 nekoshlink:
   initial-default-domain: "https://localhost:8443"
