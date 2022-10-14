@@ -16,6 +16,9 @@ server:
     key-password: "${PASSWORD}"
     key-store: "certs/keystore.jks"
     key-store-password: "${PASSWORD}"
+    client-auth: "want"
+    trust-store: "certs/truststore.jks"
+    trust-store-password: "${PASSWORD}"
 
 logging:
   level:

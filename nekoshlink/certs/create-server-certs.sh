@@ -21,4 +21,4 @@ openssl pkcs12 -export -out localhost.p12 -name "localhost" -inkey localhost.key
 
 # Import to Java Key Store for Spring Boot application
 
-keytool -importkeystore -srckeystore localhost.p12 -srcstoretype PKCS12 -destkeystore keystore.jks -deststoretype pkcs12
+keytool -importkeystore -srckeystore localhost.p12 -srcstoretype PKCS12 -destkeystore keystore.jks -deststoretype PKCS12
