@@ -1,5 +1,6 @@
 package org.nekosoft.shlink.dao.impl
 
+import org.javers.spring.annotation.JaversSpringDataAuditable
 import org.nekosoft.shlink.entity.Tag
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
+@JaversSpringDataAuditable
 interface TagRepository : JpaRepository<Tag, Long> {
 
     fun findByName(name: String): Tag?

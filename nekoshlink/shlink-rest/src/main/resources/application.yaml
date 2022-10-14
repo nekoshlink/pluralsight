@@ -31,6 +31,9 @@ logging:
     org.springframework.security: warn
     org.springframework.aop: warn
 
+javers:
+  newObjectSnapshot: true
+
 nekoshlink:
   initial-default-domain: "https://localhost:8443"
   security:

@@ -20,6 +20,9 @@ logging:
   file:
     path: ./logs
 
+javers:
+  newObjectSnapshot: true
+
 nekoshlink:
   security:
     api-key: "federicomestrone"

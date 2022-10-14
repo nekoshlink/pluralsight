@@ -19,7 +19,7 @@ dependencies {
 	api("org.springframework.boot:spring-boot-starter-data-jpa")
 	api("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-	api("org.hibernate:hibernate-envers")
+	api("org.javers:javers-spring-boot-starter-sql:6.6.5")
 
 	api("com.h2database:h2:2.1.212")
 
