@@ -10,6 +10,7 @@ import org.nekosoft.shlink.vo.VisitListOptions
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import javax.persistence.EntityManager
 
@@ -20,22 +21,27 @@ class JpaVisitDataAccessImpl(
     private val em: EntityManager,
 ): VisitDataAccess {
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Visits')")
     override fun add(visit: Visit) {
         repo.saveAndFlush(visit)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Visits') and hasRole('Stats')")
     override fun visitStats(): VisitStats {
         return repo.visitStats()
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Visits')")
     override fun visitStatsPerShortUrl(shortUrl: ShortUrl): ShortUrlWithStats {
         return repo.visitStatsPerShortUrl(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Visits')")
     override fun removeShortUrlReference(shortUrlId: Long) {
         repo.setShortUrlToNull(shortUrlId)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Visits')")
     override fun getVisits(options: VisitListOptions, pageable: Pageable?): Page<Visit> {
 
         // Set up the query string

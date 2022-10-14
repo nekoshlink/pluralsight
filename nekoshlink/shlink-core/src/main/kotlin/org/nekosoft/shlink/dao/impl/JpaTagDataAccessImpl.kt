@@ -10,6 +10,7 @@ import org.nekosoft.shlink.vo.TagListOptions
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,9 +19,11 @@ class JpaTagDataAccessImpl(
     val repo: TagRepository,
 ): TagDataAccess {
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
     override fun findByName(name: String): Tag? =
         repo.findByName(name)
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
     override fun findAll(options: TagListOptions?, pageable: Pageable?): Page<TagStats> {
         val actualPageable = pageable ?: Pageable.unpaged()
         val actualOptions = options ?: TagListOptions()
@@ -41,6 +44,7 @@ class JpaTagDataAccessImpl(
         }
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @Transactional
     override fun create(name: String, description: String?): Tag {
         if (repo.findByName(name) != null) {
@@ -49,6 +53,7 @@ class JpaTagDataAccessImpl(
         return repo.saveAndFlush(Tag(name = name, description = description))
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Tags')")
     @Transactional
     override fun deleteByName(name: String) {
         val tag = repo.findByName(name) ?: throw TagDoesNotExistException(name)
@@ -57,6 +62,7 @@ class JpaTagDataAccessImpl(
         repo.delete(tag)
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @Transactional
     override fun rename(oldName: String, newName: String, newDescription: String?): Tag {
         val tag = repo.findByName(oldName) ?: throw TagDoesNotExistException(oldName)
@@ -69,6 +75,7 @@ class JpaTagDataAccessImpl(
         return repo.saveAndFlush(tag)
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @Transactional
     override fun describe(name: String, description: String?): Tag {
         val tag = repo.findByName(name) ?: throw TagDoesNotExistException(name)

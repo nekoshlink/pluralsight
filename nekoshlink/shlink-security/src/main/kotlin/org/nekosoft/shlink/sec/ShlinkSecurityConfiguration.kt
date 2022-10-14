@@ -86,6 +86,7 @@ class ShlinkSecurityConfiguration {
             ROLE_Everything > ROLE_ShortUrls
             ROLE_Everything > ROLE_Tags
             ROLE_Everything > ROLE_Visits
+            ROLE_Everything > ROLE_Stats
         """.trimIndent())
             return hierarchy
         }

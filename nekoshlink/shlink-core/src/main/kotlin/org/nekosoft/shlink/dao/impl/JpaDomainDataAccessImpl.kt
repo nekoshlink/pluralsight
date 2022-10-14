@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.net.MalformedURLException
 import java.net.URL
@@ -51,10 +52,12 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         _defaultAuthority = defaultDomain.authority
     }
 
+    @PreAuthorize("permitAll()")
     override fun getDefaultAuthority(): String {
         return _defaultAuthority
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @Transactional
     override fun create(domain: Domain): Domain {
         if (domain.authority == DEFAULT_DOMAIN || domain.isDefault) {
@@ -66,6 +69,7 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         return repo.save(domain)
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Domains')")
     @Transactional
     override fun update(domain: Domain): Domain {
         val authority = resolveDefaultAuthority(domain.authority)
@@ -77,6 +81,7 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         return repo.saveAndFlush(updateDomain)
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @Transactional
     override fun remove(authority: String) {
         val resolvedAuthority = resolveDefaultAuthority(authority)
@@ -84,10 +89,12 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         repo.delete(removeDomain)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     override fun list(pageable: Pageable?): Page<Domain> {
         return repo.findAll(pageable ?: Pageable.unpaged())
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     override fun findByAuthority(authority: String?): Domain? {
         if (authority == null || authority == DEFAULT_DOMAIN) {
             return getDefault()
@@ -95,6 +102,7 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         return repo.findByAuthority(authority)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     override fun getDefault(): Domain {
         try {
             return repo.findByIsDefaultTrue()
@@ -103,6 +111,7 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         }
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @Transactional
     override fun makeDefault(authority: String): Domain {
         val resolvedAuthority = resolveDefaultAuthority(authority)
@@ -121,6 +130,7 @@ class JpaDomainDataAccessImpl(private val repo: DomainRepository): DomainDataAcc
         return getDefault()
     }
 
+    @PreAuthorize("permitAll()")
     override fun resolveDefaultAuthority(authority: String?): String =
         if (authority == null || authority == DEFAULT_DOMAIN) {
             getDefaultAuthority()
