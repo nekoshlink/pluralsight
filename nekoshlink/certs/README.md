@@ -48,6 +48,38 @@ server.ssl.key-alias=localhost
 server.ssl.key-password=${PASSWORD}
 ```
 
+Configure the Spring Boot application for mTLS
+---
+
+1. create the trust store
+
+`keytool -import -trustcacerts -noprompt -alias ca -ext san=dns:localhost,ip:127.0.0.1 -file rootCA.crt -keystore truststore.jks`
+
+2. configure Spring Boot
+
+```properties
+server.ssl.client-auth=want
+server.ssl.trust-store=certs/truststore.jks
+server.ssl.trust-store-password=${PASSWORD}
+```
+
+Create the client certificate for mTLS
+---
+
+1. create the client certificate
+
+`openssl req -new -newkey rsa:4096 -nodes -keyout clientAdmin.key -out clientAdmin.csr`
+
+2. sign the client certificate
+
+`openssl x509 -sha512 -req -CA rootCA.crt -CAkey rootCA.key -in clientAdmin.csr -out clientAdmin.crt -days 365 -CAcreateserial`
+
+3. export
+
+`openssl pkcs12 -export -out clientAdmin.p12 -name "clientAdmin" -inkey clientAdmin.key -in clientAdmin.crt`
+
+4. repeat for all users with different Common Names (CN) for each
+
 Configure HTTP clients
 ---
 
