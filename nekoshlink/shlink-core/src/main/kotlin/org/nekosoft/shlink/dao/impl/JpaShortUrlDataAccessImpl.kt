@@ -7,6 +7,7 @@ import org.nekosoft.shlink.vo.ShortUrlListOptions
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
@@ -17,42 +18,51 @@ class JpaShortUrlDataAccessImpl(
     private val em: EntityManager,
 ): ShortUrlDataAccess {
 
+    @PreAuthorize("hasRole('Editor') and hasRole('ShortUrls')")
     @Transactional
     override fun create(shortUrl: ShortUrl): ShortUrl {
         return repo.saveAndFlush(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('ShortUrls')")
     @Transactional
     override fun update(shortUrl: ShortUrl): ShortUrl {
         return repo.saveAndFlush(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('ShortUrls')")
     @Transactional
     override fun delete(shortUrl: ShortUrl) {
         repo.delete(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('ShortUrls')")
     @Transactional
     override fun deleteById(id: Long) {
         repo.deleteById(id)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun find(shortCode: String, authority: String): ShortUrl? {
         return repo.findByShortCodeAndDomainAuthority(shortCode, authority)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun findById(id: Long): ShortUrl? {
         return repo.findById(id).orElse(null)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun findMatching(meta: ShortUrl): ShortUrl? {
         return repo.findMatching(meta)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun shortCodeIsUnique(shortUrl: ShortUrl): Boolean {
         return repo.existsByShortCodeAndDomainAuthority(shortUrl.shortCode, shortUrl.domain.authority)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun findWithDomainFallback(shortCode: String, domain: String): ShortUrl? {
         val results = repo.findEnabledByShortCodeAndDomainWithFallback(shortCode, domain)
         return if (results.isEmpty()) {
@@ -62,10 +72,12 @@ class JpaShortUrlDataAccessImpl(
         }
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun list(pageable: Pageable?): Page<ShortUrl> {
         return repo.findAll(pageable ?: Pageable.unpaged())
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls') and (!#options.withStats or hasRole('Stats'))")
     override fun listWithStats(options: ShortUrlListOptions, pageable: Pageable?): Page<ShortUrlWithStats> {
 
         // Set up the query string
@@ -186,6 +198,7 @@ class JpaShortUrlDataAccessImpl(
 
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     override fun listCrawlableURLs(): List<String> {
         return repo.findByCrawlableIsTrue()
     }

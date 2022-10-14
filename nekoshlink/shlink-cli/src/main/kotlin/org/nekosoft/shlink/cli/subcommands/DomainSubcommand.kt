@@ -5,9 +5,7 @@ import org.nekosoft.shlink.entity.Domain
 import org.nekosoft.shlink.entity.Domain.Companion.DEFAULT_DOMAIN
 import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.*
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -21,6 +19,7 @@ class DomainSubcommand(
     private val dao: DomainDataAccess
 ) {
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @CommandLine.Command(
         name = "create",
         description = ["Creates a new domain"],
@@ -29,14 +28,6 @@ class DomainSubcommand(
     fun create(
         @CommandLine.Mixin meta: DomainCreateMeta,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val domain = dao.create(
                 Domain(
@@ -55,6 +46,7 @@ class DomainSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Domains')")
     @CommandLine.Command(
         name = "edit",
         description = ["Modifies an existing domain"],
@@ -63,14 +55,6 @@ class DomainSubcommand(
     fun update(
         @CommandLine.Mixin meta: DomainEditMeta,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val domain = dao.update(
                 Domain(
@@ -88,6 +72,7 @@ class DomainSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     @CommandLine.Command(
         name = "get",
         description = ["Gets information about an existing domain by authority"],
@@ -96,14 +81,6 @@ class DomainSubcommand(
     fun get(
         @CommandLine.Parameters(index = "0") authority: String?,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val domain = dao.findByAuthority(authority)
             if (domain == null) {
@@ -118,6 +95,7 @@ class DomainSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     @CommandLine.Command(
         name = "list",
         description = ["Lists existing domains"],
@@ -126,14 +104,6 @@ class DomainSubcommand(
     fun find(
         @CommandLine.Mixin options: DomainListOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val domains = dao.list()
             if (domains.isEmpty) {
@@ -150,6 +120,7 @@ class DomainSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @CommandLine.Command(
         name = "default",
         description = ["Makes a domain the default one"],
@@ -158,14 +129,6 @@ class DomainSubcommand(
     fun makeDefault(
         @CommandLine.Mixin meta: DomainDefaultMeta,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val domain = dao.makeDefault(meta.authority)
             println(CommandLine.Help.Ansi.AUTO.string("@|bold ${domain.id}|@ | ${domain.scheme}://${domain.authority}${if (domain.isDefault) {" (*)"} else {""} }"))
@@ -176,6 +139,7 @@ class DomainSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @CommandLine.Command(
         name = "delete",
         description = ["Deletes an existing domain"],
@@ -184,14 +148,6 @@ class DomainSubcommand(
     fun remove(
         @CommandLine.Parameters(index = "0", defaultValue = DEFAULT_DOMAIN) authority: String,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             dao.remove(authority)
             println(CommandLine.Help.Ansi.AUTO.string("Domain $authority removed successfully"))

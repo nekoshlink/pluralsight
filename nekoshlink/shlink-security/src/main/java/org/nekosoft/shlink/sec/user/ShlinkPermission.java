@@ -4,4 +4,11 @@ public enum ShlinkPermission {
     Admin,
     Editor,
     Viewer,
+
+    Everything,
+    Domains,
+    ShortUrls,
+    Tags,
+    Visits,
+    Stats,
 }

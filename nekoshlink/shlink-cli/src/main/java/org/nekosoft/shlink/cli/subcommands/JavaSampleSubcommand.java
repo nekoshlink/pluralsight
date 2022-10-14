@@ -1,9 +1,6 @@
 package org.nekosoft.shlink.cli.subcommands;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
@@ -15,21 +12,13 @@ import picocli.CommandLine;
 @Component
 public class JavaSampleSubcommand {
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Domains')")
     @CommandLine.Command(
         name = "java",
         description = "Java code for authorizing command",
         mixinStandardHelpOptions = true
     )
     public int javaCommand() {
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (
-            auth == null
-            || !auth.isAuthenticated()
-            || !auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Editor"))
-        ) {
-            throw new AccessDeniedException("Granted authority is not sufficient for this operation");
-        }
 
         // Your command logic goes here
 
