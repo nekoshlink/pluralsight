@@ -16,6 +16,8 @@ logging:
     path: ./logs
 
 nekoshlink:
+  security:
+    api-key: "federicomestrone"
   initial-default-domain: "http://localhost:8080"
   shortener:
     hashids:
