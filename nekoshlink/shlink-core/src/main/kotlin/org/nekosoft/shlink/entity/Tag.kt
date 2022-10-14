@@ -2,6 +2,7 @@ package org.nekosoft.shlink.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.Hibernate
+import org.hibernate.envers.Audited
 import org.nekosoft.shlink.entity.support.AuditInfo
 import org.nekosoft.shlink.entity.support.JpaDataAccessAudit
 import org.nekosoft.shlink.entity.support.ShortUrlsToTags
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import javax.persistence.*
 
 @Entity
+@Audited
 @EntityListeners(AuditingEntityListener::class, JpaDataAccessAudit::class)
 data class Tag(
 
