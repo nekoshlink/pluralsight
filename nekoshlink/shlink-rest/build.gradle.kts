@@ -11,6 +11,7 @@ dependencies {
 
 	implementation(project(":shlink-core"))
 	implementation("org.springframework.security:spring-security-core")
+	api("org.springframework.boot:spring-boot-starter-actuator")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 

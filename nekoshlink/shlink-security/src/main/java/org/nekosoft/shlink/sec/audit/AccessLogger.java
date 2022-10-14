@@ -3,6 +3,7 @@ package org.nekosoft.shlink.sec.audit;
 import kotlin.Unit;
 import mu.KLogger;
 import mu.KotlinLogging;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -22,6 +23,11 @@ class AccessLogger {
     @EventListener
     public void onFailure(AbstractAuthenticationFailureEvent event) {
         kLogger.warn("Failed access attempt for {} due to {}", event.getAuthentication(), event.getException().getMessage());
+    }
+
+    @EventListener
+    public void on(AuditApplicationEvent event) {
+        kLogger.warn("An Audit Event was received: {}", event);
     }
 
 }
