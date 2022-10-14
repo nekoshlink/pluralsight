@@ -4,4 +4,5 @@ include(
     "shlink-core",
     "shlink-cli",
     "shlink-rest",
+    "shlink-security",
 )

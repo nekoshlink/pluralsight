@@ -10,6 +10,8 @@ plugins {
 
 dependencies {
 
+	api(project(":shlink-security"))
+
 	api("org.jetbrains.kotlin:kotlin-reflect")
 	api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 

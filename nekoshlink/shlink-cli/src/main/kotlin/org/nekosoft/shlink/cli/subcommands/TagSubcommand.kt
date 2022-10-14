@@ -5,6 +5,9 @@ import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.TagDescribeMeta
 import org.nekosoft.shlink.vo.TagListOptions
 import org.nekosoft.shlink.vo.TagRenameMeta
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -27,6 +30,14 @@ class TagSubcommand(
         @CommandLine.Parameters(index = "0") name: String,
         @CommandLine.Option(names = ["--desc", "--description"], required = false) description: String? = null,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val tag = dao.create(name, description)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${tag.id}|@ (${tag.name}${tag.description?.let { " : $it" } ?: ""}) created successfully"))
@@ -45,6 +56,14 @@ class TagSubcommand(
     fun get(
         @CommandLine.Parameters(index = "0") name: String,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val tag = dao.findByName(name)
             if (tag == null) {
@@ -67,6 +86,14 @@ class TagSubcommand(
     fun find(
         @CommandLine.Mixin options: TagListOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val tags = dao.findAll(options)
             if (tags.isEmpty) {
@@ -91,6 +118,14 @@ class TagSubcommand(
     fun rename(
         @CommandLine.Mixin options: TagRenameMeta,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val tag = dao.rename(options.oldName, options.newName, options.newDescription)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${tag.id}|@ (${tag.name}${tag.description?.let { " : $it" } ?: ""}) renamed successfully"))
@@ -109,6 +144,14 @@ class TagSubcommand(
     fun describe(
         @CommandLine.Mixin options: TagDescribeMeta,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val tag = dao.describe(options.name, options.description)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${tag.id}|@ (${tag.name}${tag.description?.let { " : $it" } ?: ""}) described successfully"))
@@ -127,6 +170,14 @@ class TagSubcommand(
     fun delete(
         @CommandLine.Parameters(index = "0") name: String,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             dao.deleteByName(name)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${name}|@ deleted successfully"))

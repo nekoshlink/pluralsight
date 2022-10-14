@@ -6,6 +6,9 @@ import org.nekosoft.shlink.service.ShortUrlManager
 import org.nekosoft.shlink.service.VisitDataEnricher
 import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.*
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Component
 import picocli.CommandLine.ExitCode
 import picocli.CommandLine.Command
@@ -32,6 +35,14 @@ class ShortUrlSubcommand(
         @Mixin meta: ShortUrlCreateMeta,
         @Mixin options: ShortUrlCreateOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val shortUrl = shortUrls.create(meta, options)
             println(Ansi.AUTO.string("Short URL @|bold ${shortUrl.id}|@ (${shortUrl.domain.authority} / ${shortUrl.shortCode}) for ${shortUrl.longUrl} created successfully"))
@@ -51,6 +62,14 @@ class ShortUrlSubcommand(
         @Mixin meta: ShortUrlEditMeta,
         @Mixin options: ShortUrlEditOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val shortUrl = shortUrls.edit(meta, options)
             println(Ansi.AUTO.string("Short URL @|bold ${shortUrl.id}|@ (${shortUrl.domain.authority} / ${shortUrl.shortCode}) for ${shortUrl.longUrl} updated successfully"))
@@ -72,6 +91,14 @@ class ShortUrlSubcommand(
     fun delete(
         @Mixin options: ShortUrlEditOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             shortUrls.delete(options)
             println(Ansi.AUTO.string("Short URL @|bold ${options.id}|@ (${options.domain} / ${options.shortCode}) deleted successfully"))
@@ -90,6 +117,14 @@ class ShortUrlSubcommand(
     fun list(
         @Mixin options: ShortUrlListOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         val results = shortUrls.listWithStats(options).content
         if (results.isEmpty()) {
             println(Ansi.AUTO.string("There are no Short URLs at the moment..."))
@@ -113,6 +148,14 @@ class ShortUrlSubcommand(
     fun resolve(
         @Mixin meta: ResolveMeta,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Anyone"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         val enricher: VisitDataEnricher = {
             Visit(
                 source = VisitSource.CLI,
@@ -142,6 +185,14 @@ class ShortUrlSubcommand(
         @Mixin meta: ResolveMeta,
         @Mixin options: QRCodeOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Anyone"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         val enricher: VisitDataEnricher = {
             Visit(
                 source = VisitSource.CLI_QR,

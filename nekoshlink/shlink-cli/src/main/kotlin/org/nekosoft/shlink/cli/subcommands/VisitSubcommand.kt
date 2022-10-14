@@ -3,6 +3,9 @@ package org.nekosoft.shlink.cli.subcommands
 import org.nekosoft.shlink.dao.VisitDataAccess
 import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.*
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -24,6 +27,14 @@ class VisitSubcommand(
     fun list(
         @CommandLine.Mixin options: VisitListOptions,
     ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (
+            auth == null
+            || !auth.isAuthenticated
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
+        ) {
+            throw AccessDeniedException("Granted authority is not sufficient for this operation")
+        }
         return try {
             val visits = dao.getVisits(options)
             if (visits.isEmpty) {
