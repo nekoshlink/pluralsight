@@ -21,11 +21,13 @@ abstract class AbstractResolveController<R> {
     abstract fun getSource(): VisitSource
     abstract fun getResponse(meta: ResolveMeta, enricher: VisitDataEnricher, request: HttpServletRequest): ResponseEntity<R>
 
+    // no need for pre-authorize here as the security filter requires no authorization for this controller
     @GetMapping
     fun resolveShortUrl(@PathVariable("shortCode") shortCode: String, request: HttpServletRequest): ResponseEntity<R> {
         return commonResolver(shortCode, null, request)
     }
 
+    // no need for pre-authorize here as the security filter requires no authorization for this controller
     @GetMapping("{*pathTrail}")
     fun resolveShortUrl(@PathVariable("shortCode") shortCode: String, @PathVariable("pathTrail") pathTrail: String, request: HttpServletRequest): ResponseEntity<R> {
         return commonResolver(shortCode, pathTrail, request)

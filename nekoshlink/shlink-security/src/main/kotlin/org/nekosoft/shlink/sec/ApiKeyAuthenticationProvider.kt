@@ -20,8 +20,8 @@ class ApiKeyAuthenticationProvider : AuthenticationProvider {
         }
         if (authentication.credentials == serverApiKey) {
             val auths = HashSet<GrantedAuthority>()
-            auths.add(SimpleGrantedAuthority("ROLE_User"))
-            auths.add(SimpleGrantedAuthority("ROLE_Anyone"))
+            auths.add(SimpleGrantedAuthority("ROLE_Admin"))
+            auths.add(SimpleGrantedAuthority("ROLE_Everything"))
             val authenticated = ApiKeyAuthenticationToken(authentication.credentials, "api", auths)
             authenticated.isAuthenticated = true
             return authenticated

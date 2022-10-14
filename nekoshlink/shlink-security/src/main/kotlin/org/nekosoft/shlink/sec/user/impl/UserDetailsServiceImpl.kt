@@ -48,6 +48,7 @@ class UserDetailsServiceImpl(
                     password = pwd,
                     roles = mutableSetOf(
                         Role(permission = ShlinkPermission.Admin),
+                        Role(permission = ShlinkPermission.Everything),
                         // Role hierarchy will guarantee that this user can also act as Editor and Viewer
                     ),
             )

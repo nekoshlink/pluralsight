@@ -8,6 +8,7 @@ import org.nekosoft.shlink.vo.TagRenameMeta
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -21,6 +22,7 @@ class TagSubcommand(
     private val dao: TagDataAccess
 ) {
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @CommandLine.Command(
         name = "create",
         description = ["Creates a new tag"],
@@ -30,14 +32,6 @@ class TagSubcommand(
         @CommandLine.Parameters(index = "0") name: String,
         @CommandLine.Option(names = ["--desc", "--description"], required = false) description: String? = null,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val tag = dao.create(name, description)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${tag.id}|@ (${tag.name}${tag.description?.let { " : $it" } ?: ""}) created successfully"))
@@ -48,6 +42,7 @@ class TagSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
     @CommandLine.Command(
         name = "get",
         description = ["Gets information about an existing tag by name"],
@@ -56,14 +51,6 @@ class TagSubcommand(
     fun get(
         @CommandLine.Parameters(index = "0") name: String,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Viewer"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val tag = dao.findByName(name)
             if (tag == null) {
@@ -78,6 +65,7 @@ class TagSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Tags') and (!#options.withStats or hasRole('Stats'))")
     @CommandLine.Command(
         name = "list",
         description = ["Lists or finds existing tags"],
@@ -86,14 +74,6 @@ class TagSubcommand(
     fun find(
         @CommandLine.Mixin options: TagListOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Viewer"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val tags = dao.findAll(options)
             if (tags.isEmpty) {
@@ -110,6 +90,7 @@ class TagSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @CommandLine.Command(
         name = "rename",
         description = ["Renames an existing tag, optionally providing a description. If no description is given, no changes will be made to the existing description."],
@@ -118,14 +99,6 @@ class TagSubcommand(
     fun rename(
         @CommandLine.Mixin options: TagRenameMeta,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val tag = dao.rename(options.oldName, options.newName, options.newDescription)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${tag.id}|@ (${tag.name}${tag.description?.let { " : $it" } ?: ""}) renamed successfully"))
@@ -136,6 +109,7 @@ class TagSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @CommandLine.Command(
         name = "describe",
         description = ["Adds a description to an existing tag. If no description is given, the existing description will be removed."],
@@ -144,14 +118,6 @@ class TagSubcommand(
     fun describe(
         @CommandLine.Mixin options: TagDescribeMeta,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val tag = dao.describe(options.name, options.description)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${tag.id}|@ (${tag.name}${tag.description?.let { " : $it" } ?: ""}) described successfully"))
@@ -162,6 +128,7 @@ class TagSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('Tags')")
     @CommandLine.Command(
         name = "delete",
         description = ["Removes an existing tag. It will remove the tag from any Short Url that contain it."],
@@ -170,14 +137,6 @@ class TagSubcommand(
     fun delete(
         @CommandLine.Parameters(index = "0") name: String,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             dao.deleteByName(name)
             println(CommandLine.Help.Ansi.AUTO.string("Tag @|bold ${name}|@ deleted successfully"))

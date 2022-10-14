@@ -9,6 +9,7 @@ import org.nekosoft.shlink.vo.*
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import picocli.CommandLine.ExitCode
 import picocli.CommandLine.Command
@@ -26,6 +27,7 @@ class ShortUrlSubcommand(
     private val shortUrls: ShortUrlManager
 ) {
 
+    @PreAuthorize("hasRole('Editor') and hasRole('ShortUrls')")
     @Command(
         name = "create",
         description = ["Creates a new Short URL"],
@@ -35,14 +37,6 @@ class ShortUrlSubcommand(
         @Mixin meta: ShortUrlCreateMeta,
         @Mixin options: ShortUrlCreateOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val shortUrl = shortUrls.create(meta, options)
             println(Ansi.AUTO.string("Short URL @|bold ${shortUrl.id}|@ (${shortUrl.domain.authority} / ${shortUrl.shortCode}) for ${shortUrl.longUrl} created successfully"))
@@ -53,6 +47,7 @@ class ShortUrlSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('ShortUrls')")
     @Command(
         name = "edit",
         description = ["Modifies an existing Short URL"],
@@ -62,14 +57,6 @@ class ShortUrlSubcommand(
         @Mixin meta: ShortUrlEditMeta,
         @Mixin options: ShortUrlEditOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             val shortUrl = shortUrls.edit(meta, options)
             println(Ansi.AUTO.string("Short URL @|bold ${shortUrl.id}|@ (${shortUrl.domain.authority} / ${shortUrl.shortCode}) for ${shortUrl.longUrl} updated successfully"))
@@ -83,6 +70,7 @@ class ShortUrlSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('ShortUrls')")
     @Command(
         name = "delete",
         description = ["Deletes an existing Short URL"],
@@ -91,14 +79,6 @@ class ShortUrlSubcommand(
     fun delete(
         @Mixin options: ShortUrlEditOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         return try {
             shortUrls.delete(options)
             println(Ansi.AUTO.string("Short URL @|bold ${options.id}|@ (${options.domain} / ${options.shortCode}) deleted successfully"))
@@ -109,6 +89,7 @@ class ShortUrlSubcommand(
         }
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls') and (!#options.withStats or hasRole('Stats'))")
     @Command(
         name = "list",
         description = ["Shows a list of the Short URLs in the system"],
@@ -117,14 +98,6 @@ class ShortUrlSubcommand(
     fun list(
         @Mixin options: ShortUrlListOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Viewer"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         val results = shortUrls.listWithStats(options).content
         if (results.isEmpty()) {
             println(Ansi.AUTO.string("There are no Short URLs at the moment..."))
@@ -140,6 +113,7 @@ class ShortUrlSubcommand(
         return ExitCode.OK
     }
 
+    @PreAuthorize("permitAll()")
     @Command(
         name = "resolve",
         description = ["Resolves a Short URL into its corresponding Long URL"],
@@ -168,6 +142,7 @@ class ShortUrlSubcommand(
         }
     }
 
+    @PreAuthorize("permitAll()")
     @Command(
         name = "qr-resolve",
         description = ["Resolves a Short URL into its corresponding QR Code and writes the QR Code to disk"],

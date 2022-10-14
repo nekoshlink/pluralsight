@@ -2,6 +2,7 @@ package org.nekosoft.shlink.rest.controller
 
 import org.nekosoft.shlink.service.ShortUrlManager
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 /*
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class RobotsController(private val shortUrls: ShortUrlManager) {
 
+    // no need for pre-authorize here as the security filter requires no authorization for this controller
     @GetMapping("robots.txt", produces = ["text/plain"])
     fun listCrawlable(): ResponseEntity<String> {
         val prefix = """

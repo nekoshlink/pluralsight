@@ -12,6 +12,7 @@ import org.nekosoft.shlink.service.ShortUrlManager
 import org.nekosoft.shlink.vo.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -22,6 +23,7 @@ class ShortUrlApiController(
     private val visits: VisitDataAccess,
 ) {
 
+    @PreAuthorize("hasRole('ShortUrls') and hasRole('Viewer') and (!#options.withStats or hasRole('Stats'))")
     @GetMapping
     fun shortUrls(options: ShortUrlListOptions, pagination: PaginationOptions): ResponseEntity<RestResult<ShortUrlWithStats>> {
         val results = shortUrls.listWithStats(options, PaginationData.paginationToPageable(pagination))
@@ -31,6 +33,7 @@ class ShortUrlApiController(
         ))
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('ShortUrls')")
     @GetMapping("{shortCode:$URL_SEGMENT_REGEX}")
     fun shortUrl(@PathVariable("shortCode") shortCode: String, @RequestParam("domain", required = false) domain: String?): ResponseEntity<ShortUrl> {
         val shortUrl = shortUrls.retrieve(
@@ -42,6 +45,7 @@ class ShortUrlApiController(
         return ResponseEntity.ok(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Viewer') and hasRole('Visits')")
     @GetMapping("{shortCode:$URL_SEGMENT_REGEX}/visits")
     fun getVisitsForShortUrl(
         @PathVariable("shortCode") shortCode: String,
@@ -56,12 +60,14 @@ class ShortUrlApiController(
         ))
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('ShortUrls')")
     @PostMapping
     fun createShortUrl(@RequestBody meta: ShortUrlCreateMeta, options: ShortUrlCreateOptions): ResponseEntity<ShortUrl> {
         val shortUrl = shortUrls.create(meta, options)
         return ResponseEntity.status(HttpStatus.OK).body(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Editor') and hasRole('ShortUrls')")
     @PutMapping("{shortCode:$URL_SEGMENT_REGEX}")
     fun editShortUrl(@PathVariable("shortCode") shortCode: String, @RequestBody meta: ShortUrlEditMeta, options: ShortUrlEditOptions): ResponseEntity<ShortUrl> {
         options.shortCode = shortCode
@@ -69,6 +75,7 @@ class ShortUrlApiController(
         return ResponseEntity.status(HttpStatus.OK).body(shortUrl)
     }
 
+    @PreAuthorize("hasRole('Admin') and hasRole('ShortUrls')")
     @DeleteMapping("{shortCode:$URL_SEGMENT_REGEX}")
     fun deleteShortUrl(@PathVariable("shortCode") shortCode: String, @RequestParam("domain", required = false) domain: String?): ResponseEntity<Void> {
         shortUrls.delete(
