@@ -1,6 +1,7 @@
 package org.nekosoft.shlink.sec.cli;
 
 import org.nekosoft.shlink.sec.ApiKeyAuthenticationToken;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import picocli.CommandLine.*;
 import java.util.HashSet;
 
 @Component
+@ConditionalOnNotWebApplication
 public class AuthenticationExecutionStrategy implements IExecutionStrategy {
 
     private AuthenticationManager authManager;

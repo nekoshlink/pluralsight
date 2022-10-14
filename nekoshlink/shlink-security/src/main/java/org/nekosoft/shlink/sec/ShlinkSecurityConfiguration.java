@@ -1,5 +1,6 @@
 package org.nekosoft.shlink.sec;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AnonymousAuthenticationProvider;
@@ -43,6 +44,7 @@ public class ShlinkSecurityConfiguration {
     }
 
     @Bean
+    @ConditionalOnNotWebApplication
     public AuthenticationManager authManager(
             ApiKeyAuthenticationProvider apiKeyProvider,
             DaoAuthenticationProvider userProvider
