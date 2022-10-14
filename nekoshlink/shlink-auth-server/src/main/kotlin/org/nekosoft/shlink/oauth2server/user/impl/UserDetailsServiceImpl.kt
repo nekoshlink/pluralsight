@@ -1,8 +1,8 @@
-package org.nekosoft.shlink.sec.user.impl
+package org.nekosoft.shlink.oauth2server.user.impl
 
 import mu.KotlinLogging
-import org.nekosoft.shlink.sec.user.*
-import org.nekosoft.shlink.sec.user.rest.UserListOptions
+import org.nekosoft.shlink.oauth2server.user.*
+import org.nekosoft.shlink.oauth2server.user.rest.UserListOptions
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -44,13 +44,13 @@ class UserDetailsServiceImpl(
             val pwd = generatePassword()
             kLogger.warn("New root user was created with username 'nekoadm' and password '$pwd'")
             val rootUser = User(
-                    username = "nekoadm",
-                    password = pwd,
-                    roles = mutableSetOf(
-                            Role(permission = ShlinkPermission.Admin),
-                            Role(permission = ShlinkPermission.User),
-                            Role(permission = ShlinkPermission.Anyone),
-                    ),
+                username = "nekoadm",
+                password = pwd,
+                roles = mutableSetOf(
+                    Role(permission = ShlinkPermission.Admin),
+                    Role(permission = ShlinkPermission.User),
+                    Role(permission = ShlinkPermission.Anyone),
+                ),
             )
             createUser(rootUser)
         }

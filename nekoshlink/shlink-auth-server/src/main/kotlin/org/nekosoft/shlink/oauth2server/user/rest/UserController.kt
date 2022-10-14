@@ -1,9 +1,9 @@
-package org.nekosoft.shlink.sec.user.rest
+package org.nekosoft.shlink.oauth2server.user.rest
 
-import org.nekosoft.shlink.sec.ShlinkSecurityConfiguration.Companion.VERSION_STRING
-import org.nekosoft.shlink.sec.user.User
-import org.nekosoft.shlink.sec.user.UserDataAccess
-import org.nekosoft.shlink.sec.user.rest.PaginationData.Companion.paginationToPageable
+import org.nekosoft.shlink.oauth2server.ShlinkOAuth2Server.Companion.VERSION_STRING
+import org.nekosoft.shlink.oauth2server.user.User
+import org.nekosoft.shlink.oauth2server.user.UserDataAccess
+import org.nekosoft.shlink.oauth2server.user.rest.PaginationData.Companion.paginationToPageable
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -5,4 +5,5 @@ include(
     "shlink-cli",
     "shlink-rest",
     "shlink-security",
+    "shlink-auth-server",
 )

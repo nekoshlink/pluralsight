@@ -2,6 +2,7 @@ package org.nekosoft.shlink.cli
 
 import org.nekosoft.shlink.cli.subcommands.*
 import picocli.CommandLine
+import java.io.File
 
 @CommandLine.Command(
     name = "nkshlink",
@@ -16,6 +17,9 @@ import picocli.CommandLine
     ]
 )
 class ShlinkCommand {
+
+    @field:CommandLine.Option(names = ["--access-token-file"])
+    var accessToken: File? = null
 
     @field:CommandLine.Option(names = ["--usr"], interactive = true, arity = "0..1", echo = true, description = ["The username to log in as. If the argument is empty, it can be entered interactively."])
     var authUser: String? = null
