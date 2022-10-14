@@ -23,7 +23,6 @@ class TrackController(
 
     override fun getResponse(meta: ResolveMeta, enricher: VisitDataEnricher, request: HttpServletRequest): ResponseEntity<ByteArrayResource> {
         val (shortUrl, _) = shortUrls.resolve(meta, enricher)
-
         if (shortUrl == null) {
             return ResponseEntity.notFound().build()
         }

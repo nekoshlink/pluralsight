@@ -31,7 +31,7 @@ abstract class AbstractResolveController<R> {
         return commonResolver(shortCode, pathTrail, request)
     }
 
-    protected open fun commonResolver(shortCode: String, pathTrail: String?, request: HttpServletRequest): ResponseEntity<R> {
+    private fun commonResolver(shortCode: String, pathTrail: String?, request: HttpServletRequest): ResponseEntity<R> {
 
         try {
 

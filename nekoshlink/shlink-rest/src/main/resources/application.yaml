@@ -7,6 +7,12 @@ spring:
       ddl-auto: "update"
   main:
     banner-mode: "console"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # must register this domain in /etc/hosts against 127.0.0.1
+          issuer-uri: "http://auth-server:8080"
 
 server:
   port: 8443

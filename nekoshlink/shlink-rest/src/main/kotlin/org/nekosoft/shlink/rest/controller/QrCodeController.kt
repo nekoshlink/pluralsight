@@ -28,8 +28,7 @@ class QrCodeController(
             filename = request.getParameter("filename"),
             size = request.getParameter("size")?.toIntOrNull(),
         )
-        val imageOut = shortUrls.qrResolve(meta, options, enricher)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        val imageOut = shortUrls.qrResolve(meta, options, enricher) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         val resource = ByteArrayResource(imageOut.toByteArray(), IMAGE_PNG_VALUE)
 
         return ResponseEntity.ok()

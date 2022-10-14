@@ -1,6 +1,7 @@
 package org.nekosoft.shlink.sec.cli
 
 import org.nekosoft.shlink.sec.ApiKeyAuthenticationToken
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -8,10 +9,13 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken
 import org.springframework.stereotype.Component
 import picocli.CommandLine.*
+import java.io.File
 
 @Component
+@ConditionalOnNotWebApplication
 class AuthenticationExecutionStrategy(
     private val authManager: AuthenticationManager
 ) : IExecutionStrategy {
@@ -19,7 +23,10 @@ class AuthenticationExecutionStrategy(
         val username = parseResult.matchedOption("--usr")?.getValue<String>()
         val password = parseResult.matchedOption("--pwd")?.getValue<String>()
         val apiKey = parseResult.matchedOption("--api-key")?.getValue<String>()
-        val authentication = if (!username.isNullOrBlank() && !password.isNullOrBlank()) {
+        val accessTokenFile = parseResult.matchedOption("--access-token-file")?.getValue<File>()
+        val authentication = if (accessTokenFile != null && accessTokenFile.canRead()) {
+            BearerTokenAuthenticationToken(accessTokenFile.readText())
+        } else if (!username.isNullOrBlank() && !password.isNullOrBlank()) {
             UsernamePasswordAuthenticationToken(username, password)
         } else if (!apiKey.isNullOrBlank()) {
             ApiKeyAuthenticationToken(apiKey)
