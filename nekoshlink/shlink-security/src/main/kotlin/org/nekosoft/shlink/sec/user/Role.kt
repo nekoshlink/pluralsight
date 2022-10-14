@@ -15,7 +15,7 @@ data class Role(
     @JsonBackReference
     var user: User? = null,
 
-    var permission: ShlinkPermission = ShlinkPermission.User,
+    var permission: ShlinkPermission = ShlinkPermission.Viewer,
 
     ) {
 

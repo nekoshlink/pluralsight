@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.config.web.servlet.invoke
@@ -28,6 +29,25 @@ class ShlinkAdminApiX509SecurityConfiguration {
                 disable()
             }
             authorizeRequests {
+                authorize(HttpMethod.GET, "/api/v1/shorturls/**", hasAnyRole("Admin", "Editor", "Viewer"))
+                authorize(HttpMethod.POST, "/api/v1/shorturls/**", hasAnyRole("Admin", "Editor"))
+                authorize(HttpMethod.PUT, "/api/v1/shorturls/**", hasAnyRole("Admin", "Editor"))
+                authorize(HttpMethod.DELETE, "/api/v1/shorturls/**", hasRole("Admin"))
+
+                authorize(HttpMethod.GET, "/api/v1/domains/**", hasRole("Admin"))
+                authorize(HttpMethod.POST, "/api/v1/domains/**", hasRole("Admin"))
+                authorize(HttpMethod.PUT, "/api/v1/domains/**", hasRole("Admin"))
+                authorize(HttpMethod.PATCH, "/api/v1/domains/**", hasRole("Admin"))
+                authorize(HttpMethod.DELETE, "/api/v1/domains/**", hasRole("Admin"))
+
+                authorize(HttpMethod.GET, "/api/v1/tags/**", hasAnyRole("Admin", "Editor", "Viewer"))
+                authorize(HttpMethod.POST, "/api/v1/tags/**", hasAnyRole("Admin", "Editor"))
+                authorize(HttpMethod.PUT, "/api/v1/tags/**", hasAnyRole("Admin", "Editor"))
+                authorize(HttpMethod.PATCH, "/api/v1/tags/**", hasAnyRole("Admin", "Editor"))
+                authorize(HttpMethod.DELETE, "/api/v1/tags/**", hasRole("Admin"))
+
+                authorize(HttpMethod.GET, "/api/v1/visits/**", hasRole("Admin"))
+
                 authorize(anyRequest, authenticated)
             }
             sessionManagement {
