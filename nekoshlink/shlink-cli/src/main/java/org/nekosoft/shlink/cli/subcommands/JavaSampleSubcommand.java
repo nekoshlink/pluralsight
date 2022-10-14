@@ -26,10 +26,7 @@ public class JavaSampleSubcommand {
         if (
             auth == null
             || !auth.isAuthenticated()
-                    || !(
-                    auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Admin"))
-                            || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Editor"))
-            )
+            || !auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Editor"))
         ) {
             throw new AccessDeniedException("Granted authority is not sufficient for this operation");
         }

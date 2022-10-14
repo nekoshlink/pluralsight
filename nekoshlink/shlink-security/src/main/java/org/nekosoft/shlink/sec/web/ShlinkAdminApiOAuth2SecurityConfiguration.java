@@ -31,9 +31,9 @@ public class ShlinkAdminApiOAuth2SecurityConfiguration {
                 .csrf().disable()
                 .authorizeRequests()
 
-                .mvcMatchers(GET, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor", "Viewer")
-                .mvcMatchers(POST, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor")
-                .mvcMatchers(PUT, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(GET, "/api/v1/shorturls/**").hasRole("Viewer")
+                .mvcMatchers(POST, "/api/v1/shorturls/**").hasRole("Editor")
+                .mvcMatchers(PUT, "/api/v1/shorturls/**").hasRole("Editor")
                 .mvcMatchers(DELETE, "/api/v1/shorturls/**").hasRole("Admin")
 
                 .mvcMatchers(GET, "/api/v1/domains/**").hasRole("Admin")
@@ -42,10 +42,10 @@ public class ShlinkAdminApiOAuth2SecurityConfiguration {
                 .mvcMatchers(PATCH, "/api/v1/domains/**").hasRole("Admin")
                 .mvcMatchers(DELETE, "/api/v1/domains/**").hasRole("Admin")
 
-                .mvcMatchers(GET, "/api/v1/tags/**").hasAnyRole("Admin", "Editor", "Viewer")
-                .mvcMatchers(POST, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
-                .mvcMatchers(PUT, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
-                .mvcMatchers(PATCH, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(GET, "/api/v1/tags/**").hasRole("Viewer")
+                .mvcMatchers(POST, "/api/v1/tags/**").hasRole("Editor")
+                .mvcMatchers(PUT, "/api/v1/tags/**").hasRole("Editor")
+                .mvcMatchers(PATCH, "/api/v1/tags/**").hasRole("Editor")
                 .mvcMatchers(DELETE, "/api/v1/tags/**").hasRole("Admin")
 
                 .mvcMatchers(GET, "/api/v1/visits/**").hasRole("Admin")
