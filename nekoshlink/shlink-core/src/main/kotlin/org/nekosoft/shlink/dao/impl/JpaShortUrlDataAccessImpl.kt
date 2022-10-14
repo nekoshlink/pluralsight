@@ -210,7 +210,7 @@ class JpaShortUrlDataAccessImpl(
     companion object {
 
         val possibleSorts = mapOf(
-            "dateCreated" to "s.createdDate",
+            "dateCreated" to "s.auditInfo.createdDate",
             "shortCode" to "s.shortCode",
             "title" to "s.title",
             "longUrl" to "s.longUrl",

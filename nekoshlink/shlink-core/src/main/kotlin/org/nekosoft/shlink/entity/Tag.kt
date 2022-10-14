@@ -2,10 +2,14 @@ package org.nekosoft.shlink.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.Hibernate
+import org.nekosoft.shlink.entity.support.AuditInfo
+import org.nekosoft.shlink.entity.support.JpaDataAccessAudit
 import org.nekosoft.shlink.entity.support.ShortUrlsToTags
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import javax.persistence.*
 
 @Entity
+@EntityListeners(AuditingEntityListener::class, JpaDataAccessAudit::class)
 data class Tag(
 
     @Id
@@ -20,6 +24,9 @@ data class Tag(
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tag", cascade = [CascadeType.ALL], orphanRemoval = true)
     @JsonIgnore
     var shortUrls: MutableSet<ShortUrlsToTags> = mutableSetOf(),
+
+    @Embedded
+    var auditInfo: AuditInfo = AuditInfo(),
 
     ) {
 
