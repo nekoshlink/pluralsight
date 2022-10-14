@@ -11,6 +11,7 @@ import org.nekosoft.shlink.entity.support.ShortUrlWithStats
 import org.nekosoft.shlink.entity.support.VisitSource
 import org.nekosoft.shlink.entity.support.VisitStats
 import org.nekosoft.shlink.entity.support.VisitType
+import org.nekosoft.shlink.sec.delegation.annotation.RunAs
 import org.nekosoft.shlink.service.ShortUrlManager
 import org.nekosoft.shlink.vo.*
 import org.springframework.data.domain.PageRequest
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.time.ZonedDateTime
 
@@ -33,9 +35,7 @@ class ShlinkCompatApiController(
 
     //region INTERFACE IMPLEMENTATION
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
     @GetMapping("health")
     fun health(): ResponseEntity<Map<String, Any>> {
         return ResponseEntity.status(HttpStatus.OK).body(mapOf(
@@ -48,9 +48,7 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
     @GetMapping("mercure-info")
     fun mercureInfo(): ResponseEntity<Map<String, Any>> {
         return ResponseEntity.status(HttpStatus.OK).body(mapOf<String, Any>(
@@ -61,9 +59,8 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Domains", "Viewer"])
     @GetMapping("domains")
     fun domains(): ResponseEntity<Map<String, Any>> {
         val results = domains.list(null)
@@ -79,9 +76,8 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Domains", "Editor"])
     @PatchMapping("domains/redirects")
     fun domainRedirects(@RequestBody redirects: DomainRedirectsRequest): ResponseEntity<Map<String, Any?>> {
         val domain = domains.findByAuthority(redirects.domain)
@@ -97,18 +93,16 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Tags", "Editor"])
     @PutMapping("tags")
     fun renameTag(@RequestBody meta: TagRenameMeta): ResponseEntity<Void> {
         tags.rename(meta.oldName, meta.newName)
         return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Tags", "Admin"])
     @DeleteMapping("tags")
     fun deleteTags(@RequestParam("tags[]") names: List<String>): ResponseEntity<Void> {
         names.forEach {
@@ -117,9 +111,8 @@ class ShlinkCompatApiController(
         return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["ShortUrls", "Viewer", "Stats"])
     @GetMapping("short-urls")
     fun shortUrls(
         @RequestParam("page", required = false) page: Int?,
@@ -167,9 +160,8 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["ShortUrls", "Viewer"])
     @GetMapping("short-urls/{shortCode:$URL_SEGMENT_REGEX}")
     fun shortUrl(@PathVariable("shortCode") shortCode: String, @RequestParam("domain", required = false) domain: String?): ResponseEntity<Map<String,Any?>> {
         val shortUrl = shortUrls.retrieve(
@@ -181,9 +173,8 @@ class ShlinkCompatApiController(
         return ResponseEntity.ok(shortUrlToShlinkData(shortUrl))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Visits", "Viewer"])
     @GetMapping("short-urls/{shortCode:$URL_SEGMENT_REGEX}/visits")
     fun getVisitsForShortUrl(
         @PathVariable("shortCode") shortCode: String,
@@ -207,9 +198,8 @@ class ShlinkCompatApiController(
 
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["ShortUrls", "Editor"])
     @PostMapping("short-urls")
     fun createShortUrl(@RequestBody shortUrlCreation: ShortUrlCreateRequest): ResponseEntity<Map<String,Any?>> {
         shortUrlCreation.meta?.validFrom = shortUrlCreation.validSince
@@ -221,9 +211,8 @@ class ShlinkCompatApiController(
         return ResponseEntity.status(HttpStatus.OK).body(shortUrlToShlinkData(shortUrl))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["ShortUrls", "Editor"])
     @PatchMapping("short-urls/{shortCode:$URL_SEGMENT_REGEX}")
     fun editShortUrl(@PathVariable("shortCode") shortCode: String, @RequestBody shortUrlUpdate: ShortUrlUpdateRequest): ResponseEntity<ShortUrl> {
         shortUrlUpdate.options?.shortCode = shortCode
@@ -236,9 +225,8 @@ class ShlinkCompatApiController(
         return ResponseEntity.status(HttpStatus.OK).body(shortUrl)
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["ShortUrls", "Admin"])
     @DeleteMapping("short-urls/{shortCode:$URL_SEGMENT_REGEX}")
     fun deleteShortUrl(@PathVariable("shortCode") shortCode: String, @RequestParam("domain") domain: String): ResponseEntity<Void> {
         shortUrls.delete(
@@ -257,9 +245,8 @@ class ShlinkCompatApiController(
         return ResponseEntity.noContent().build()
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Visits", "Viewer"])
     @GetMapping("visits")
     fun visits(): ResponseEntity<Map<String, Any>> {
         val stats = visits.visitStats()
@@ -268,9 +255,8 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Visits", "Viewer"])
     @GetMapping("visits/non-orphan")
     fun nonOrphanVisits(
         @RequestParam("page", required = false) page: Int?,
@@ -291,9 +277,8 @@ class ShlinkCompatApiController(
 
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Visits", "Viewer"])
     @GetMapping("visits/orphan")
     fun orphanVisits(
         @RequestParam("page", required = false) page: Int?,
@@ -315,9 +300,8 @@ class ShlinkCompatApiController(
 
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Visits", "Viewer"])
     @GetMapping("tags/{tag}/visits")
     fun visitsPerTag(
         @PathVariable("tag") name: String,
@@ -339,9 +323,8 @@ class ShlinkCompatApiController(
 
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Tags", "Viewer", "Stats"])
     @GetMapping("tags")
     fun tags(
         @RequestParam("withStats", required = false) withStats: Boolean?,
@@ -375,9 +358,8 @@ class ShlinkCompatApiController(
         ))
     }
 
-    /*
-     * COMPLETE FOR SHLINK COMPATIBILITY
-     */
+    @PreAuthorize("hasRole('API_Key_User')")
+    @RunAs(roles = ["Tags", "Viewer", "Stats"])
     @GetMapping("tags/stats")
     fun tagStats(
         @RequestParam("searchTerm", required = false) term: String?,

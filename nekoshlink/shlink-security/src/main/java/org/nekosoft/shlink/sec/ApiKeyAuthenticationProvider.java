@@ -23,8 +23,7 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
         }
         if (authentication.getCredentials().equals(serverApiKey)) {
             HashSet<GrantedAuthority> auths = new HashSet<>();
-            auths.add(new SimpleGrantedAuthority("ROLE_Admin"));
-            auths.add(new SimpleGrantedAuthority("ROLE_Everything"));
+            auths.add(new SimpleGrantedAuthority("ROLE_API_Key_User"));
             ApiKeyAuthenticationToken authenticated = new ApiKeyAuthenticationToken(authentication.getCredentials().toString(), "api", auths);
             authenticated.setAuthenticated(true);
             return authenticated;
