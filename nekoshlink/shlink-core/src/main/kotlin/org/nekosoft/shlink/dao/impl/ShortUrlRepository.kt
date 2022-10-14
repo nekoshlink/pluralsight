@@ -1,5 +1,6 @@
 package org.nekosoft.shlink.dao.impl
 
+import org.javers.spring.annotation.JaversSpringDataAuditable
 import org.nekosoft.shlink.entity.ShortUrl
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
+@JaversSpringDataAuditable
 interface ShortUrlRepository : JpaRepository<ShortUrl, Long> {
 
     @Query("SELECT n from ShortUrl n WHERE n.shortCode = :#{#meta.shortCode} AND n.domain = :#{#meta.domain} AND n.longUrl = :#{#meta.longUrl} AND n.maxVisits = :#{#meta.maxVisits}")

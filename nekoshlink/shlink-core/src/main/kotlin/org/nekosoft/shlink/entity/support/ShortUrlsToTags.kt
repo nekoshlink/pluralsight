@@ -2,13 +2,11 @@ package org.nekosoft.shlink.entity.support
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.Hibernate
-import org.hibernate.envers.Audited
 import org.nekosoft.shlink.entity.ShortUrl
 import org.nekosoft.shlink.entity.Tag
 import javax.persistence.*
 
 @Entity
-@Audited
 data class ShortUrlsToTags(
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
