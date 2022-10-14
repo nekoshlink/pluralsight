@@ -9,7 +9,6 @@ import org.nekosoft.shlink.vo.rest.RestResult
 import org.nekosoft.shlink.vo.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -19,7 +18,6 @@ class VisitApiController(
     private val visits: VisitDataAccess,
 ) {
 
-    @PreAuthorize("hasRole('Visits') and hasRole('Viewer')")
     @GetMapping
     fun visits(options: VisitListOptions, pagination: PaginationOptions): ResponseEntity<RestResult<Visit>> {
         val results = visits.getVisits(options, paginationToPageable(pagination))

@@ -12,7 +12,6 @@ import picocli.CommandLine;
 @Component
 public class JavaSampleSubcommand {
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Domains')")
     @CommandLine.Command(
         name = "java",
         description = "Java code for authorizing command",

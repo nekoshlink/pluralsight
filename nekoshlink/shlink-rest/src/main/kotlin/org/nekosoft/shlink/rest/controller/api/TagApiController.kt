@@ -10,7 +10,6 @@ import org.nekosoft.shlink.vo.rest.RestResult
 import org.nekosoft.shlink.vo.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,7 +19,6 @@ class TagApiController(
     private val tags: TagDataAccess,
 ) {
 
-    @PreAuthorize("hasRole('Tags') and hasRole('Viewer') and (!#options.withStats or hasRole('Stats'))")
     @GetMapping
     fun tags(options: TagListOptions, pagination: PaginationOptions): ResponseEntity<RestResult<TagStats>> {
         val results = tags.findAll(options, paginationToPageable(pagination))
@@ -30,35 +28,30 @@ class TagApiController(
         ))
     }
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Tags')")
     @PostMapping
     fun createTag(@RequestBody meta: TagCreateMeta): ResponseEntity<Tag> {
         val tag = tags.create(meta.name, meta.description)
         return ResponseEntity.status(HttpStatus.OK).body(tag)
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
     @GetMapping("{name}")
     fun findTag(@PathVariable("name") name: String): ResponseEntity<Tag> {
         val tag = tags.findByName(name)
         return ResponseEntity.status(HttpStatus.OK).body(tag)
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @PatchMapping("rename")
     fun renameTag(@RequestBody meta: TagRenameMeta): ResponseEntity<Void> {
         tags.rename(meta.oldName, meta.newName, meta.newDescription)
         return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @PatchMapping("describe")
     fun describeTag(@RequestBody meta: TagDescribeMeta): ResponseEntity<Void> {
         tags.describe(meta.name, meta.description)
         return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Tags')")
     @DeleteMapping("{name}")
     fun deleteTags(@PathVariable("name") name: String): ResponseEntity<Void> {
         tags.deleteByName(name)
