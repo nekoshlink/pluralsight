@@ -19,7 +19,7 @@ public class Role {
     private ShlinkPermission permission;
 
     public Role() {
-        this(null, null, ShlinkPermission.User);
+        this(null, null, ShlinkPermission.Viewer);
     }
 
     public Role(User user, ShlinkPermission permission) {

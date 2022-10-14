@@ -39,7 +39,10 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+            || !(
+                    auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
+                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
+                    )
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }
@@ -66,7 +69,10 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+            || !(
+                    auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
+                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
+                    )
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }
@@ -95,7 +101,7 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }
@@ -121,7 +127,11 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_User"))
+            || !(
+                    auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
+                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
+                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Viewer"))
+                    )
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }
@@ -148,14 +158,6 @@ class ShortUrlSubcommand(
     fun resolve(
         @Mixin meta: ResolveMeta,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Anyone"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         val enricher: VisitDataEnricher = {
             Visit(
                 source = VisitSource.CLI,
@@ -185,14 +187,6 @@ class ShortUrlSubcommand(
         @Mixin meta: ResolveMeta,
         @Mixin options: QRCodeOptions,
     ): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        if (
-            auth == null
-            || !auth.isAuthenticated
-            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Anyone"))
-        ) {
-            throw AccessDeniedException("Granted authority is not sufficient for this operation")
-        }
         val enricher: VisitDataEnricher = {
             Visit(
                 source = VisitSource.CLI_QR,

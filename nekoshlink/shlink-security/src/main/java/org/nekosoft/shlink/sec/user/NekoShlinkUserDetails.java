@@ -30,7 +30,7 @@ public class NekoShlinkUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream().map(
-                it -> new SimpleGrantedAuthority(it.getPermission().name())
+                it -> new SimpleGrantedAuthority("ROLE_" + it.getPermission().name())
         ).collect(Collectors.toSet());
     }
 

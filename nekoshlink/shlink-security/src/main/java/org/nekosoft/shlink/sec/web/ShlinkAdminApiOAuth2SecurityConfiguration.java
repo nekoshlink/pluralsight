@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 
+import static org.springframework.http.HttpMethod.*;
+
 
 @Configuration
 @ConditionalOnWebApplication
@@ -27,9 +29,30 @@ public class ShlinkAdminApiOAuth2SecurityConfiguration {
                 .cors()
                 .and()
                 .csrf().disable()
-                .authorizeRequests(authorize ->
-                        authorize.anyRequest().authenticated()
-                )
+                .authorizeRequests()
+
+                .mvcMatchers(GET, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor", "Viewer")
+                .mvcMatchers(POST, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(PUT, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(DELETE, "/api/v1/shorturls/**").hasRole("Admin")
+
+                .mvcMatchers(GET, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(POST, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(PUT, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(PATCH, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(DELETE, "/api/v1/domains/**").hasRole("Admin")
+
+                .mvcMatchers(GET, "/api/v1/tags/**").hasAnyRole("Admin", "Editor", "Viewer")
+                .mvcMatchers(POST, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(PUT, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(PATCH, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(DELETE, "/api/v1/tags/**").hasRole("Admin")
+
+                .mvcMatchers(GET, "/api/v1/visits/**").hasRole("Admin")
+
+                .anyRequest().authenticated()
+
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .requestCache().requestCache(new NullRequestCache())

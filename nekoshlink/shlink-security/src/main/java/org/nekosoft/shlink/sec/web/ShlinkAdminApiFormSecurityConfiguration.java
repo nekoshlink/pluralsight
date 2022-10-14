@@ -7,6 +7,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.http.HttpMethod.*;
+
 //@Configuration
 @ConditionalOnWebApplication
 public class ShlinkAdminApiFormSecurityConfiguration {
@@ -35,9 +37,30 @@ public class ShlinkAdminApiFormSecurityConfiguration {
         return http
                 .cors()
                 .and()
-                .authorizeRequests(authorize ->
-                        authorize.anyRequest().authenticated()
-                )
+                .authorizeRequests()
+
+                .mvcMatchers(GET, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor", "Viewer")
+                .mvcMatchers(POST, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(PUT, "/api/v1/shorturls/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(DELETE, "/api/v1/shorturls/**").hasRole("Admin")
+
+                .mvcMatchers(GET, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(POST, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(PUT, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(PATCH, "/api/v1/domains/**").hasRole("Admin")
+                .mvcMatchers(DELETE, "/api/v1/domains/**").hasRole("Admin")
+
+                .mvcMatchers(GET, "/api/v1/tags/**").hasAnyRole("Admin", "Editor", "Viewer")
+                .mvcMatchers(POST, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(PUT, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(PATCH, "/api/v1/tags/**").hasAnyRole("Admin", "Editor")
+                .mvcMatchers(DELETE, "/api/v1/tags/**").hasRole("Admin")
+
+                .mvcMatchers(GET, "/api/v1/visits/**").hasRole("Admin")
+
+                .anyRequest().authenticated()
+
+                .and()
                 .formLogin()
                 .and().build();
     }

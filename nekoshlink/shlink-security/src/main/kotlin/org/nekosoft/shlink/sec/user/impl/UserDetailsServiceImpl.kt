@@ -48,8 +48,8 @@ class UserDetailsServiceImpl(
                     pwd,
                     mutableSetOf(
                             Role(ShlinkPermission.Admin),
-                            Role(ShlinkPermission.User),
-                            Role(ShlinkPermission.Anyone),
+                            Role(ShlinkPermission.Editor),
+                            Role(ShlinkPermission.Viewer),
                     ),
             )
             createUser(rootUser)
