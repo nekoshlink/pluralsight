@@ -1,0 +1,7 @@
+{
+  "authority": "https://auth.nekosoft.org/realms/nekoshlink",
+  "client_id": "nekoshlink",
+  "client_secret": "mU5ujSbJphW0YySet9pdGhIpwl972W6Z",
+  "redirect_uri": "http://localhost:3000/",
+  "scope": "openid nekoshlink:manage"
+}
