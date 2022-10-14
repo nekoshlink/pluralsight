@@ -11,6 +11,7 @@ dependencies {
 
     api("org.springframework.boot:spring-boot-starter-security")
     api("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.apache.tomcat.embed:tomcat-embed-core")
     implementation("org.springframework.data:spring-data-jpa")
     implementation("org.aspectj:aspectjweaver")
