@@ -3,6 +3,7 @@ package org.nekosoft.shlink.entity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.Hibernate
+import org.hibernate.envers.Audited
 import org.nekosoft.shlink.entity.support.AuditInfo
 import org.nekosoft.shlink.entity.support.JpaDataAccessAudit
 import org.nekosoft.shlink.entity.support.ShortUrlsToTags
@@ -12,6 +13,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@Audited
 @EntityListeners(AuditingEntityListener::class, JpaDataAccessAudit::class)
 class ShortUrl (
 
