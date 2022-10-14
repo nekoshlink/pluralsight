@@ -1,0 +1,8 @@
+.gradle
+.idea
+*/build
+build
+data
+oauth2.token
+logs
+nekoshlink.png

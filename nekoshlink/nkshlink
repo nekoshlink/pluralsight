@@ -1,0 +1,10 @@
+#!/bin/bash
+
+java \
+    -Dspring.main.banner-mode=OFF \
+    -Dlogging.level.root=INFO \
+    -Dlogging.level.org.nekosoft.shlink=INFO \
+    -Dlogging.level.org.springframework.security=INFO \
+    -Dlogging.file.path=./logs \
+    -jar shlink-cli/build/libs/shlink-cli-1.0.0.jar \
+    "$@"

@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "nekoshlink.shortener.hashids.salt",
+      "type": "java.lang.String",
+      "description": "The salt used by the default generator of short codes for randomization."
+    },
+    {
+      "name": "nekoshlink.default-domain",
+      "type": "java.lang.String",
+      "description": "The default domain of this installation. On application start-up, the domain will be created if it does not exist, or will be made the default if it exists and it isn't the default."
+    }
+  ]
+}

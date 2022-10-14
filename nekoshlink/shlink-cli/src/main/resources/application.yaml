@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: "jdbc:h2:file:./data/nekoshlink.db;AUTO_SERVER=TRUE"
+  jpa:
+    hibernate:
+      ddl-auto: "update"
+  main:
+    banner-mode: off
+
+logging:
+  pattern:
+    console: ""
+  level:
+    root: info
+  file:
+    path: ./logs
+
+nekoshlink:
+  initial-default-domain: "http://localhost:8080"
+  shortener:
+    hashids:
+      salt: "R-Q9qQxh(7pS7MZuI!2lA/jMEfwiVe36"
