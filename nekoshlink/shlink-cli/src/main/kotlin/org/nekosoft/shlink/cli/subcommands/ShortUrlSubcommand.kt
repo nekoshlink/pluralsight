@@ -39,10 +39,7 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !(
-                    auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-                    )
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }
@@ -69,10 +66,7 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !(
-                    auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-                    )
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }
@@ -127,11 +121,7 @@ class ShortUrlSubcommand(
         if (
             auth == null
             || !auth.isAuthenticated
-            || !(
-                    auth.authorities.contains(SimpleGrantedAuthority("ROLE_Admin"))
-                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Editor"))
-                            || auth.authorities.contains(SimpleGrantedAuthority("ROLE_Viewer"))
-                    )
+            || !auth.authorities.contains(SimpleGrantedAuthority("ROLE_Viewer"))
         ) {
             throw AccessDeniedException("Granted authority is not sufficient for this operation")
         }

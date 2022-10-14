@@ -47,9 +47,8 @@ class UserDetailsServiceImpl(
                     username = "nekoadm",
                     password = pwd,
                     roles = mutableSetOf(
-                            Role(permission = ShlinkPermission.Admin),
-                            Role(permission = ShlinkPermission.Editor),
-                            Role(permission = ShlinkPermission.Viewer),
+                        Role(permission = ShlinkPermission.Admin),
+                        // Role hierarchy will guarantee that this user can also act as Editor and Viewer
                     ),
             )
             createUser(rootUser)

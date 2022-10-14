@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
 import org.springframework.security.authentication.AnonymousAuthenticationProvider
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
@@ -67,6 +69,16 @@ class ShlinkSecurityConfiguration {
         userProvider,
         AnonymousAuthenticationProvider("NekoShlink")
     )
+
+    @Bean
+    fun roleHierarchy(): RoleHierarchy {
+        val hierarchy = RoleHierarchyImpl()
+        hierarchy.setHierarchy("""
+            ROLE_Admin > ROLE_Editor
+            ROLE_Editor > ROLE_Viewer
+        """.trimIndent())
+        return hierarchy
+    }
 
     companion object {
         const val VERSION_STRING = "1"
