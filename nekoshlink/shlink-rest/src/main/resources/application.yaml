@@ -11,8 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          # must register this domain in /etc/hosts against 127.0.0.1
-          issuer-uri: "http://auth-server:8080"
+          issuer-uri: "https://auth.nekosoft.org/realms/nekoshlink"
 
 server:
   port: 8443
