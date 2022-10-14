@@ -5,10 +5,6 @@ import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.TagDescribeMeta
 import org.nekosoft.shlink.vo.TagListOptions
 import org.nekosoft.shlink.vo.TagRenameMeta
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -22,7 +18,6 @@ class TagSubcommand(
     private val dao: TagDataAccess
 ) {
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @CommandLine.Command(
         name = "create",
         description = ["Creates a new tag"],
@@ -42,7 +37,6 @@ class TagSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
     @CommandLine.Command(
         name = "get",
         description = ["Gets information about an existing tag by name"],
@@ -65,7 +59,6 @@ class TagSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Tags') and (!#options.withStats or hasRole('Stats'))")
     @CommandLine.Command(
         name = "list",
         description = ["Lists or finds existing tags"],
@@ -90,7 +83,6 @@ class TagSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @CommandLine.Command(
         name = "rename",
         description = ["Renames an existing tag, optionally providing a description. If no description is given, no changes will be made to the existing description."],
@@ -109,7 +101,6 @@ class TagSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
     @CommandLine.Command(
         name = "describe",
         description = ["Adds a description to an existing tag. If no description is given, the existing description will be removed."],
@@ -128,7 +119,6 @@ class TagSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Tags')")
     @CommandLine.Command(
         name = "delete",
         description = ["Removes an existing tag. It will remove the tag from any Short Url that contain it."],

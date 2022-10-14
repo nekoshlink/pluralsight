@@ -3,10 +3,6 @@ package org.nekosoft.shlink.cli.subcommands
 import org.nekosoft.shlink.dao.VisitDataAccess
 import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.*
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -20,7 +16,6 @@ class VisitSubcommand(
     private val dao: VisitDataAccess
 ) {
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Visits')")
     @CommandLine.Command(
         name = "list",
         description = ["List all visits with optional filters"],

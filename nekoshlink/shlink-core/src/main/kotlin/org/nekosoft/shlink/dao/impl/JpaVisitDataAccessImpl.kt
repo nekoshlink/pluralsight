@@ -6,6 +6,9 @@ import org.nekosoft.shlink.entity.ShortUrl
 import org.nekosoft.shlink.entity.Visit
 import org.nekosoft.shlink.entity.support.ShortUrlWithStats
 import org.nekosoft.shlink.entity.support.VisitStats
+import org.nekosoft.shlink.sec.roles.IsVisitEditor
+import org.nekosoft.shlink.sec.roles.IsVisitStatsViewer
+import org.nekosoft.shlink.sec.roles.IsVisitViewer
 import org.nekosoft.shlink.vo.VisitListOptions
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -21,27 +24,27 @@ class JpaVisitDataAccessImpl(
     private val em: EntityManager,
 ): VisitDataAccess {
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Visits')")
+    @IsVisitEditor
     override fun add(visit: Visit) {
         repo.saveAndFlush(visit)
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Visits') and hasRole('Stats')")
+    @IsVisitStatsViewer
     override fun visitStats(): VisitStats {
         return repo.visitStats()
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Visits')")
+    @IsVisitViewer
     override fun visitStatsPerShortUrl(shortUrl: ShortUrl): ShortUrlWithStats {
         return repo.visitStatsPerShortUrl(shortUrl)
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Visits')")
+    @IsVisitEditor
     override fun removeShortUrlReference(shortUrlId: Long) {
         repo.setShortUrlToNull(shortUrlId)
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Visits')")
+    @IsVisitViewer
     override fun getVisits(options: VisitListOptions, pageable: Pageable?): Page<Visit> {
 
         // Set up the query string

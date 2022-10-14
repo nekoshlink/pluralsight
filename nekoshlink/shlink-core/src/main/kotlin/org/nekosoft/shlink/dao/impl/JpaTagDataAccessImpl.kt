@@ -3,6 +3,10 @@ package org.nekosoft.shlink.dao.impl
 import org.nekosoft.shlink.dao.TagDataAccess
 import org.nekosoft.shlink.entity.Tag
 import org.nekosoft.shlink.entity.support.TagStats
+import org.nekosoft.shlink.sec.roles.IsTagAdmin
+import org.nekosoft.shlink.sec.roles.IsTagEditor
+import org.nekosoft.shlink.sec.roles.IsTagStatsViewer
+import org.nekosoft.shlink.sec.roles.IsTagViewer
 import org.nekosoft.shlink.service.exception.TagAlreadyExistsException
 import org.nekosoft.shlink.service.exception.TagDoesNotExistException
 import org.nekosoft.shlink.service.exception.TagListOptionsException
@@ -19,11 +23,11 @@ class JpaTagDataAccessImpl(
     val repo: TagRepository,
 ): TagDataAccess {
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
+    @IsTagViewer
     override fun findByName(name: String): Tag? =
         repo.findByName(name)
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Tags')")
+    @IsTagStatsViewer
     override fun findAll(options: TagListOptions?, pageable: Pageable?): Page<TagStats> {
         val actualPageable = pageable ?: Pageable.unpaged()
         val actualOptions = options ?: TagListOptions()
@@ -44,7 +48,7 @@ class JpaTagDataAccessImpl(
         }
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
+    @IsTagEditor
     @Transactional
     override fun create(name: String, description: String?): Tag {
         if (repo.findByName(name) != null) {
@@ -53,7 +57,7 @@ class JpaTagDataAccessImpl(
         return repo.saveAndFlush(Tag(name = name, description = description))
     }
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Tags')")
+    @IsTagAdmin
     @Transactional
     override fun deleteByName(name: String) {
         val tag = repo.findByName(name) ?: throw TagDoesNotExistException(name)
@@ -62,7 +66,7 @@ class JpaTagDataAccessImpl(
         repo.delete(tag)
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
+    @IsTagEditor
     @Transactional
     override fun rename(oldName: String, newName: String, newDescription: String?): Tag {
         val tag = repo.findByName(oldName) ?: throw TagDoesNotExistException(oldName)
@@ -75,7 +79,7 @@ class JpaTagDataAccessImpl(
         return repo.saveAndFlush(tag)
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Tags')")
+    @IsTagEditor
     @Transactional
     override fun describe(name: String, description: String?): Tag {
         val tag = repo.findByName(name) ?: throw TagDoesNotExistException(name)

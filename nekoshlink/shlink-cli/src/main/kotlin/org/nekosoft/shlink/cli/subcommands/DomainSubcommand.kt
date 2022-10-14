@@ -5,7 +5,6 @@ import org.nekosoft.shlink.entity.Domain
 import org.nekosoft.shlink.entity.Domain.Companion.DEFAULT_DOMAIN
 import org.nekosoft.shlink.service.exception.NekoShlinkException
 import org.nekosoft.shlink.vo.*
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 
@@ -19,7 +18,6 @@ class DomainSubcommand(
     private val dao: DomainDataAccess
 ) {
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @CommandLine.Command(
         name = "create",
         description = ["Creates a new domain"],
@@ -46,7 +44,6 @@ class DomainSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Editor') and hasRole('Domains')")
     @CommandLine.Command(
         name = "edit",
         description = ["Modifies an existing domain"],
@@ -72,7 +69,6 @@ class DomainSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     @CommandLine.Command(
         name = "get",
         description = ["Gets information about an existing domain by authority"],
@@ -95,7 +91,6 @@ class DomainSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Viewer') and hasRole('Domains')")
     @CommandLine.Command(
         name = "list",
         description = ["Lists existing domains"],
@@ -120,7 +115,6 @@ class DomainSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @CommandLine.Command(
         name = "default",
         description = ["Makes a domain the default one"],
@@ -139,7 +133,6 @@ class DomainSubcommand(
         }
     }
 
-    @PreAuthorize("hasRole('Admin') and hasRole('Domains')")
     @CommandLine.Command(
         name = "delete",
         description = ["Deletes an existing domain"],

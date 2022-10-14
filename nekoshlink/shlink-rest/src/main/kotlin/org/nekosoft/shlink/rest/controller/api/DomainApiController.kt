@@ -9,7 +9,6 @@ import org.nekosoft.shlink.vo.rest.RestResult
 import org.nekosoft.shlink.vo.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -19,7 +18,6 @@ class DomainApiController(
     private val domains: DomainDataAccess,
 ) {
 
-    @PreAuthorize("hasRole('ROLE_Viewer') and hasRole('ROLE_Domains')")
     @GetMapping
     fun domains(options: DomainListOptions, pagination: PaginationOptions): ResponseEntity<RestResult<Domain>> {
         val results = domains.list(paginationToPageable(pagination))
@@ -29,7 +27,6 @@ class DomainApiController(
         ))
     }
 
-    @PreAuthorize("hasRole('ROLE_Admin') and hasRole('ROLE_Domains')")
     @PostMapping
     fun createDomain(@RequestBody meta: DomainCreateMeta): ResponseEntity<Domain> {
         val domain = domains.create(Domain(
@@ -43,14 +40,12 @@ class DomainApiController(
         return ResponseEntity.status(HttpStatus.OK).body(domain)
     }
 
-    @PreAuthorize("hasRole('ROLE_Admin') and hasRole('ROLE_Domains')")
     @PatchMapping("default")
     fun makeDefault(@RequestBody meta: DomainDefaultMeta): ResponseEntity<Void> {
         domains.makeDefault(meta.authority)
         return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 
-    @PreAuthorize("hasRole('ROLE_Editor') and hasRole('ROLE_Domains')")
     @PutMapping("{authority}")
     fun editDomain(@PathVariable("authority") authority: String, @RequestBody meta: DomainEditMeta): ResponseEntity<Void> {
         val domain = Domain(
@@ -64,7 +59,6 @@ class DomainApiController(
         return ResponseEntity.status(HttpStatus.OK).body(null)
     }
 
-    @PreAuthorize("hasRole('ROLE_Admin') and hasRole('ROLE_Domains')")
     @DeleteMapping("{authority}")
     fun editDomain(@PathVariable("authority") authority: String): ResponseEntity<Void> {
         domains.remove(authority)
