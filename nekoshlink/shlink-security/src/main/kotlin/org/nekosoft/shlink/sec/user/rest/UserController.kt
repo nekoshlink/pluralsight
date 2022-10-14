@@ -1,6 +1,6 @@
 package org.nekosoft.shlink.sec.user.rest
 
-import org.nekosoft.shlink.sec.ShlinkSecurityConfiguration.Companion.VERSION_STRING
+import org.nekosoft.shlink.sec.ShlinkSecurityConfiguration.VERSION_STRING
 import org.nekosoft.shlink.sec.user.User
 import org.nekosoft.shlink.sec.user.UserDataAccess
 import org.nekosoft.shlink.sec.user.rest.PaginationData.Companion.paginationToPageable

@@ -44,12 +44,12 @@ class UserDetailsServiceImpl(
             val pwd = generatePassword()
             kLogger.warn("New root user was created with username 'nekoadm' and password '$pwd'")
             val rootUser = User(
-                    username = "nekoadm",
-                    password = pwd,
-                    roles = mutableSetOf(
-                            Role(permission = ShlinkPermission.Admin),
-                            Role(permission = ShlinkPermission.User),
-                            Role(permission = ShlinkPermission.Anyone),
+                    "nekoadm",
+                    pwd,
+                    mutableSetOf(
+                            Role(ShlinkPermission.Admin),
+                            Role(ShlinkPermission.User),
+                            Role(ShlinkPermission.Anyone),
                     ),
             )
             createUser(rootUser)
@@ -95,7 +95,7 @@ class UserDetailsServiceImpl(
         val curUser = repo.getById(user.id!!)
         curUser.lastModifiedDate = LocalDateTime.now()
         curUser.username = user.username
-        curUser.enabled = user.enabled
+        curUser.isEnabled = user.isEnabled;
         curUser.description = user.description
         curUser.firstName = user.firstName
         curUser.lastName = user.lastName
@@ -167,7 +167,7 @@ class UserDetailsServiceImpl(
         }
         newRoles.forEach {
             if (user.roles.find { t -> t.permission == it.permission } == null) {
-                val r = roles.findByPermissionAndUser(it.permission, user) ?: Role(user = user, permission = it.permission)
+                val r = roles.findByPermissionAndUser(it.permission, user) ?: Role(user, it.permission)
                 user.roles.add(r)
             }
         }
